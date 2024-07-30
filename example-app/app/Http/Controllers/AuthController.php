@@ -24,7 +24,7 @@ class AuthController extends Controller
             'message' => 'Welcome to GeStock'
         ];
         Mail::to($request->email)->send(new WelcomeEmail($d));
-        $user->assignRole('admin');
+        $user->assignRole('user');
         return [
             'user'=>$user,
             'token'=>$token
