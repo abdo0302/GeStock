@@ -16,7 +16,6 @@ class AuthController extends Controller
             'email'=>'required|email|unique:users,email',
             'password'=>'required|string|confirmed'
         ]);
-        $data['id_role'] = 1;
         $data['password'] = Hash::make($data['password']);
         $user=User::create($data);
         $token =$user->createToken('auth_token')->plainTextToken;
@@ -25,6 +24,7 @@ class AuthController extends Controller
             'message' => 'Welcome to GeStock'
         ];
         Mail::to($request->email)->send(new WelcomeEmail($d));
+        $user->assignRole('admin');
         return [
             'user'=>$user,
             'token'=>$token
@@ -46,7 +46,7 @@ class AuthController extends Controller
         $token =$user->createToken('auth_token')->plainTextToken;
         return [
             'user'=>$user,
-            'token'=>$token
+            'token'=>$token,
         ];
     }
 

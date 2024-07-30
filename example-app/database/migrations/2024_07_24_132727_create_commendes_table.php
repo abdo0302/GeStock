@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('lest_product');
             $table->unsignedBigInteger("in_client");
             $table->unsignedBigInteger("in_user");
-            $table->foreign("in_client")->references("id")->on("clients");
+            $table->foreign('in_client')->references('id')->on('clients')->onDelete('cascade');
             $table->foreign("in_user")->references("id")->on("users");
             $table->timestamps();
         });

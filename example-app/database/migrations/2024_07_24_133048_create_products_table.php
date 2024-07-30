@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('qaliti');
+            $table->string('image')->nullable(); 
             $table->string('price');
             $table->unsignedBigInteger("in_category");
             $table->unsignedBigInteger("in_fournisseur");

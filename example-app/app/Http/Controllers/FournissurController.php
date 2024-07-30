@@ -4,62 +4,90 @@ namespace App\Http\Controllers;
 
 use App\Models\Fournissur;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FournissurController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    public function store(Request $reques){
+        $user = Auth::user();
+        if ($user->can('gere les Fournisseurs')) {
+            $validateDta=$reques->validate([
+            'nom'=>'required|string',
+            'email'=>'required|email',
+            'phone'=>'required|string',
+            'address'=>'required|string',
+            ]);
+
+            $Fournissur=Fournissur::create($validateDta);
+            if($Fournissur){
+                return response()->json([
+                'success'=>'Fournissur created successfully'
+            ],200);
+            }else{
+                return response()->json([
+                    'error'=>'Fournissur not created'
+                ],500);
+            }
+        }else{
+            return response()->json([
+                'error'=>'Non autorisé'
+            ],500);
+        }
+        
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    public function show_all(Request $reques){
+        $Fournissur=Fournissur::paginate(10);
+        return response()->json([
+            $Fournissur
+        ],200);
+    } 
+
+    public function show(Request $reques){
+        $id=$reques->id;
+        $Fournissur=Fournissur::find($id);
+        if($Fournissur){
+            return response()->json([
+                $Fournissur
+                ],200);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+    public function update(Request $reques,$id){
+        $user = Auth::user();
+        if ($user->can('gere les Fournisseurs')) {
+            $Fournissur = Fournissur::findOrFail($id);
+
+            $validatedData = $reques->validate([
+                'nom' => 'nullable|string',
+                'email' => 'nullable|email',
+                'phone' => 'nullable|string',
+                'address' => 'nullable|string',
+            ]);
+            $Fournissur->update($validatedData);
+            return response()->json($Fournissur);
+        }else{
+            return response()->json([
+                'error'=>'Non autorisé'
+            ],500);
+        }
+        
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Fournissur $fournissur)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Fournissur $fournissur)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Fournissur $fournissur)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Fournissur $fournissur)
-    {
-        //
+    public function destroy($id){
+        $user = Auth::user();
+        if ($user->can('gere les Fournisseurs')) {
+            $Fournissur = Fournissur::findOrFail($id);
+            $Fournissur->delete();
+                return [
+                    'success' => 'Fournissur deleted successfully'
+                   ];
+        }else{
+            return response()->json([
+                'error'=>'Non autorisé'
+            ],500);
+        }
+        
     }
 }
