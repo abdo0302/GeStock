@@ -4,62 +4,88 @@ namespace App\Http\Controllers;
 
 use App\Models\commende;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommendeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    public function store(Request $request){
+        $user = Auth::user();
+        if ($user->can('gere les Commandes')) {
+            $validateDta=$request->validate([
+                'status'=>'required|string',
+                'lest_product' => 'required|string',
+                'in_client' => 'required|integer',
+                'in_user'=>'required|integer',
+            ]);
+    
+            $commende=commende::create($validateDta);
+            if($commende){
+                return response()->json([
+                'success'=>'commende created successfully'
+            ],200);
+            }else{
+                return response()->json([
+                    'error'=>'commende not created'
+                ],500);
+            }
+        }else{
+            return response()->json([
+                'error'=>'Non autorisé'
+            ],500);
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    public function show_all(Request $reques){
+        $commende=commende::paginate(10);
+        return response()->json([
+            $commende
+        ],200);
+    } 
+
+    public function show(Request $reques){
+        $id=$reques->id;
+        $commende=commende::find($id);
+        if($commende){
+            return response()->json([
+                $commende
+                ],200);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+    public function update(Request $request,$id){
+        $user = Auth::user();
+        if ($user->can('gere les Commandes')) {
+            $commende = commende::findOrFail($id);
+
+            $validatedData = $request->validate([
+                'status'=>'nullable|string',
+                'lest_product' => 'nullable|string',
+                'in_client' => 'nullable|integer',
+                'in_user'=>'nullable|integer',
+            ]);
+            $commende->update($validatedData);
+            return response()->json($commende);
+        }else{
+            return response()->json([
+                'error'=>'Non autorisé'
+            ],500);
+        }
+        
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(commende $commende)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(commende $commende)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, commende $commende)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(commende $commende)
-    {
-        //
+    public function destroy($id){
+        $user = Auth::user();
+        if ($user->can('gere les Commandes')) {
+            $commende = commende::findOrFail($id);
+            $commende->delete();
+            return [
+                'success' => 'commende deleted successfully'
+            ];
+        }else{
+            return response()->json([
+                'error'=>'Non autorisé'
+            ],500);
+        }
+        
     }
 }
