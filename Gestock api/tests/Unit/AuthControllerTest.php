@@ -16,7 +16,8 @@ use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
 {
-    public function test_register()
+    // test register start
+    public function test_register_successfully()
     {
         $faker = Faker::create();
         $email = $faker->unique()->safeEmail;
@@ -29,15 +30,57 @@ class AuthControllerTest extends TestCase
         $response->assertJsonStructure(['user', 'token']);
     }
 
-    public function test_login()
-    {
-        $response = $this->post('/api/login', [
-            'email' => 'tes@example.com',
-            'password' => 'password',
+    public function test_register_invalid_data(){
+        $response = $this->postJson('/api/register', [
+            'name' => '',
+            'email' => 'not-an-email',
+            'password' => 'pass',
+            'password_confirmation' => 'different-pass',
         ]);
-        $response->assertStatus(200)->assertJsonStructure(['user', 'token']);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['name', 'email', 'password']);
     }
 
+    // test register end
+
+    // test login start
+    public function test_login_successfully()
+    {
+        $user = User::factory()->create([
+            'password' => bcrypt('password123'),
+        ]);
+    
+        $response = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password123',
+        ]);
+    
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'user' => ['id', 'name', 'email'],
+            'token',
+            'role'
+        ]);
+    }
+
+    public function test_login_invalid(){
+        $user = User::factory()->create([
+            'password' => bcrypt('password123'),
+        ]);
+    
+        $response = $this->postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ]);
+    
+        $response->assertStatus(401);
+        $response->assertJson(['message' => 'Invalid credentials']);
+    }
+
+    // test login end
+
+    // test logout start
     public function test_logout()
     {
         $user = User::factory()->create();
@@ -53,4 +96,5 @@ class AuthControllerTest extends TestCase
                      'message' => 'Successfully logged out'
                  ]);
     }
+    // test logout end
 }

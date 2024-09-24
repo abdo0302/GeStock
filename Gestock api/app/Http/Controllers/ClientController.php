@@ -11,7 +11,7 @@ class ClientController extends Controller
 
     public function store(Request $reques){
         $user = Auth::user();
-        if ($user->can('gere les Clients')) {
+
             $validateDta=$reques->validate([
             'name'=>'required|string',
             'email'=>'required|email',
@@ -25,15 +25,10 @@ class ClientController extends Controller
                 'success'=>'client created successfully'
             ],200);
             }
-        }else{
-            return response()->json([
-                'error'=>'Non autorisé'
-            ],500);
-        } 
     }
 
     public function show_all(Request $reques){
-        $clients=client::paginate(10);
+        $clients=client::get();
         return response()->json([
             $clients
         ],200);
@@ -51,7 +46,6 @@ class ClientController extends Controller
 
     public function update(Request $reques,$id){
         $user = Auth::user();
-        if ($user->can('gere les Clients')) {
             $client = client::findOrFail($id);
             $validatedData = $reques->validate([
             'name' => 'nullable|string',
@@ -61,26 +55,15 @@ class ClientController extends Controller
             ]);
             $client->update($validatedData);
             return response()->json($client);
-        }else{
-            return response()->json([
-                'error'=>'Non autorisé'
-            ],500);
-        }  
     }
 
     public function destroy($id){
         $user = Auth::user();
-        if ($user->can('gere les Clients')) {
             $client = client::findOrFail($id);
             $client->delete();
             return [
                 'success' => 'client deleted successfully'
             ];
-        }else{
-            return response()->json([
-                'error'=>'Non autorisé'
-            ],500);
-        }  
     }
    
 }

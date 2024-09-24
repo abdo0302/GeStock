@@ -11,9 +11,9 @@ class GererUsersController extends Controller
     public function show_all(Request $reques){
         $user = Auth::user();
         if ($user->can('gere les Users')) {
-            $Users=User::paginate(10);
+            $users = User::with('permissions')->get();
                  return response()->json([
-                 $Users
+                 $users
                  ],200);
         }else{
             return response()->json([

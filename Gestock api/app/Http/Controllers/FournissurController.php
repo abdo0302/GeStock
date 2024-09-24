@@ -10,7 +10,6 @@ class FournissurController extends Controller
 {
     public function store(Request $reques){
         $user = Auth::user();
-        if ($user->can('gere les Fournisseurs')) {
             $validateDta=$reques->validate([
             'nom'=>'required|string',
             'email'=>'required|email',
@@ -28,17 +27,12 @@ class FournissurController extends Controller
                     'error'=>'Fournissur not created'
                 ],500);
             }
-        }else{
-            return response()->json([
-                'error'=>'Non autorisé'
-            ],500);
-        }
         
         
     }
 
     public function show_all(Request $reques){
-        $Fournissur=Fournissur::paginate(10);
+        $Fournissur=Fournissur::get();
         return response()->json([
             $Fournissur
         ],200);
@@ -56,7 +50,6 @@ class FournissurController extends Controller
 
     public function update(Request $reques,$id){
         $user = Auth::user();
-        if ($user->can('gere les Fournisseurs')) {
             $Fournissur = Fournissur::findOrFail($id);
 
             $validatedData = $reques->validate([
@@ -67,27 +60,16 @@ class FournissurController extends Controller
             ]);
             $Fournissur->update($validatedData);
             return response()->json($Fournissur);
-        }else{
-            return response()->json([
-                'error'=>'Non autorisé'
-            ],500);
-        }
         
     }
 
     public function destroy($id){
         $user = Auth::user();
-        if ($user->can('gere les Fournisseurs')) {
             $Fournissur = Fournissur::findOrFail($id);
             $Fournissur->delete();
                 return [
                     'success' => 'Fournissur deleted successfully'
                    ];
-        }else{
-            return response()->json([
-                'error'=>'Non autorisé'
-            ],500);
-        }
         
     }
 }

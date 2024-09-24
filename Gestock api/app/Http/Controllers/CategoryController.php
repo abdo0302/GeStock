@@ -35,7 +35,7 @@ class CategoryController extends Controller
     }
 
     public function show_all(Request $reques){
-        $Category=Category::paginate(10);
+        $Category=Category::get();
         return response()->json([
             $Category
         ],200);

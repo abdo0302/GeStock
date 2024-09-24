@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
             $GererPermission = Permission::create(['name' => 'gere les Permission']);
 
             $adminRole->givePermissionTo([$GererProduitPermission, $GererCategoriPermission, $GererFournisseurPermission, $GererClientPermission, $GererCommandePermission, $EnvoyerEmailPermission, $GererFactursPermission, $GererUsersPermission, $GererPermission]);
-            $userRole->givePermissionTo([$GererProduitPermission, $GererCategoriPermission,$GererCommandePermission,$GererFactursPermission]);
+            $userRole->givePermissionTo([$GererProduitPermission, $GererCategoriPermission,$GererCommandePermission,$GererFactursPermission,$GererClientPermission]);
         }
     }
 }

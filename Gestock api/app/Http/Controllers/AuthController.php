@@ -23,11 +23,12 @@ class AuthController extends Controller
             'title' => 'Inscrivez-vous à GeStock',
             'message' => 'Welcome to GeStock'
         ];
-        Mail::to($request->email)->send(new WelcomeEmail($d));
-        $user->assignRole('user');
+        // Mail::to($request->email)->send(new WelcomeEmail($d));
+        $user->assignRole('admin');
         return [
             'user'=>$user,
-            'token'=>$token
+            'token'=>$token,
+            'role'=>$user->getAllPermissions()
         ];
     }
 
@@ -47,6 +48,7 @@ class AuthController extends Controller
         return [
             'user'=>$user,
             'token'=>$token,
+            'role'=>$user->getAllPermissions()
         ];
     }
 
